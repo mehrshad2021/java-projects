@@ -1,0 +1,163 @@
+import java.util.Scanner;
+import java.util.HashMap;
+
+public class Untitled {
+    private static HashMap<String, String> users = new HashMap<>();
+    private static HashMap<String, HashMap<String, Object>> products = new HashMap<>();
+    private static double userCredit = 0.0;
+    
+    public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        String userName;
+        String userPassword;
+
+        while (true) {
+            System.out.println("Welcome\n1. Login\n2. Sign up\n3. Exit\n(please write the number)");
+            int fPageInp = input.nextInt();
+            if (fPageInp == 1) {
+                System.out.println("Welcome back! Please enter your username and password");
+                userName = input.next();
+                userPassword = input.next();
+                if (users.containsKey(userName) && users.get(userName).equals(userPassword)) {
+                    System.out.println("Login successful!");
+                    userCredit = 0.0;
+                    showDashboard(userName);
+                } else {
+                    System.out.println("Invalid username or password.");
+                }
+            } else if (fPageInp == 2) {
+                System.out.println("Enter username:");
+                userName = input.next();
+                System.out.println("Enter password:");
+                userPassword = input.next();
+                users.put(userName, userPassword);
+                System.out.println("Account created successfully!");
+                userCredit = 0.0;
+
+                HashMap<String, Object> productInfo = new HashMap<>();
+                productInfo.put("price", 0.0);
+                productInfo.put("taxRate", 0.0);
+                productInfo.put("count", 0);
+                products.put("default", productInfo);
+                showDashboard(userName);
+            } else if (fPageInp == 3) {
+                System.out.println("Exiting...");
+                System.exit(0);
+            } else {
+                System.out.println("Invalid choice.");
+            }
+        }
+    }
+
+    public static void showDashboard(String userName) {
+        Scanner input = new Scanner(System.in);
+        int choice = 0;
+        while (choice != 5) {
+            System.out.println("Please choose an option:\n1. My details\n2. Add a product\n3. Change details\n4. Buy an item\n5. Logout");
+            choice = input.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.println("My details:");
+                    System.out.println("Username: " + userName);
+                    System.out.println("Credit: $" + userCredit); 
+                    break;
+                case 2:
+                    System.out.println("Add a product:");
+                    System.out.println("Please enter the product name:");
+                    String newProductName = input.next();
+                    System.out.println("Please enter the product price:");
+                    double productPrice = input.nextDouble();
+                    System.out.println("Please enter the tax rate:");
+                    double taxRate = input.nextDouble();
+                    System.out.println("Please enter the product count:");
+                    int count = input.nextInt();
+                    System.out.println("Please enter the credit cost:");
+                    double creditCost = input.nextDouble();
+
+                
+                    HashMap<String, Object> productInfo = new HashMap<>();
+                    productInfo.put("price", productPrice);
+                    productInfo.put("taxRate", taxRate);
+                    productInfo.put("count", count);
+                    productInfo.put("creditCost", creditCost);
+                    products.put(newProductName, productInfo);
+                
+                    System.out.println("Product added successfully!");
+                    break;
+                
+                    case 3:
+                        System.out.println("Change details:");
+                        System.out.println("1. Change password\n2. Change username");
+                        int changeInput = input.nextInt();
+                        if (changeInput == 1) {
+                            System.out.println("Please enter your current password:");
+                            String currentPassword = input.next();
+                            if (users.get(userName).equals(currentPassword)) {
+                                System.out.println("Please enter your new password:");
+                                String newPassword = input.next();
+                                System.out.println("Please re-enter your new password:");
+                                String confirmPassword = input.next();
+                                if (newPassword.equals(confirmPassword)) {
+                                    System.out.println("Are you sure you want to change your password? (y/n)");
+                                    String sureInput = input.next();
+                                    if (sureInput.equalsIgnoreCase("y")) {
+                                        users.put(userName, newPassword);
+                                        System.out.println("Password changed successfully!");
+                                    } else {
+                                        System.out.println("Password not changed.");
+                                    }
+                                } else {
+                                    System.out.println("Passwords do not match. Password not changed.");
+                                }
+                            } else {
+                                System.out.println("Invalid password. Password not changed.");
+                            }
+                        } else if (changeInput == 2) {
+                            System.out.println("Please enter your new username:");
+                            String newUserName = input.next();
+                            users.put(newUserName, users.remove(userName));
+                            System.out.println("Username changed successfully!");
+                            userName = newUserName;
+                        } else {
+                            System.out.println("Invalid input.");
+                        }
+                        break;
+                    
+            
+                    case 4:
+                        System.out.println("here is the list of products\n" + products);
+                        System.out.println("Enter the product name:");
+                        String productName = input.next();
+                        System.out.println("Enter the product count:");
+                        int productCount = input.nextInt();
+                        if (products.containsKey(productName) && ((int) ((HashMap<String, Object>) products.get(productName)).get("count")) >= productCount && userCredit >= ((double) ((HashMap<String, Object>) products.get(productName)).get("creditCost")) * productCount) {
+
+                            // Deduct the credit cost from the user's balance
+                            double creditSpent = ((double) ((HashMap<String, Object>) products.get(productName)).get("creditCost")) * productCount;
+                            userCredit -= creditSpent;
+                            System.out.println("Credit spent: $" + creditSpent);
+                        } else {
+                            System.out.println("Product not available, insufficient quantity, or not enough credit.");
+                        }
+                        
+                        break;
+                    case 5:
+                        System.out.println("Logging out...");
+                        return;
+                    case 6:
+                        System.out.println("Add credit:");
+                        System.out.println("Please enter the amount to add:");
+                        double creditToAdd = input.nextDouble();
+                        userCredit += creditToAdd; 
+                        System.out.println("Credit added successfully!");
+                        break;
+                    default:
+                    System.out.println("Invalid choice.");
+                }
+            }
+        }
+    }
+                
+                
+                
